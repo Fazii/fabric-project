@@ -47,6 +47,7 @@ public final class ImageContract implements ContractInterface {
 		return image;
 	}
 	
+	@Transaction()
 	public Image[] getImagesBetweenDates(final Context ctx, final String startDate, String endDate) {
 		ChaincodeStub stub = ctx.getStub();
 		
