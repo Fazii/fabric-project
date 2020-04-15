@@ -4,7 +4,7 @@ plugins {
 	id 'jacoco'
 }
 
-group 'com.nowakowski'
+group 'com.fabric.examples'
 version '0.1'
 
 dependencies {

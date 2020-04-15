@@ -1,4 +1,4 @@
-package com.nowakowski.data;
+package com.fabric.examples.oltcar;
 
 import com.owlike.genson.Genson;
 import org.hyperledger.fabric.contract.Context;
