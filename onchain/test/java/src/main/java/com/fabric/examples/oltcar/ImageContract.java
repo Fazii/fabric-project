@@ -15,6 +15,7 @@ import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Contract(
@@ -48,34 +49,23 @@ public final class ImageContract implements ContractInterface {
 	}
 	
 	@Transaction()
-	public Image[] getImagesBetweenDates(final Context ctx, final String startDate, String endDate) {
+	public Image[] getImagesBetweenDates(final Context ctx, final String startMillis, String endMillis) {
 		ChaincodeStub stub = ctx.getStub();
 		
 		List<Image> images = new ArrayList<>();
-		final String startTime = String.valueOf(Timestamp.valueOf(startDate).getTime());
-		final String endTime = String.valueOf(Timestamp.valueOf(endDate).getTime());
 		
-		final QueryResultsIterator<KeyValue> results = stub.getStateByRange(startTime, endTime);
+		final QueryResultsIterator<KeyValue> results = stub.getStateByRange(startMillis, endMillis);
 		
-		for (KeyValue result : results) {
-			Image image = genson.deserialize(result.getValue(), Image.class);
+		Iterator<KeyValue> iter = results.iterator();
+		while (iter.hasNext()) {
+			final KeyValue next = iter.next();
+			Image image = genson.deserialize(next.getValue(), Image.class);
 			images.add(image);
 		}
-		
-		return images.toArray(new Image[0]);
-	}
-	
-	@Transaction()
-	public Image[] getImages(final Context ctx) {
-		ChaincodeStub stub = ctx.getStub();
-		
-		List<Image> images = new ArrayList<>();
-		
-		final QueryResultsIterator<KeyValue> results = stub.getStateByRange("", "");
-		
-		for (KeyValue result : results) {
-			Image image = genson.deserialize(result.getValue(), Image.class);
-			images.add(image);
+		try {
+			results.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		return images.toArray(new Image[0]);
