@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 
 public class ClientApp {
 	
-	private static String user = "user4";
+	private static String user = "user5";
 	
 	static {
 		System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
@@ -37,7 +37,7 @@ public class ClientApp {
 			
 			byte[] result;
 			
-			contract.submitTransaction("addImage", String.valueOf(System.currentTimeMillis()), "blabla--");
+			contract.submitTransaction("addImage", "1", "blabla--");
 			
 			result = contract.evaluateTransaction("getImagesBetweenDates", "1970-04-15 14:41:33.087", "2130-04-16 14:41:33.087");
 			System.out.println(new String(result));

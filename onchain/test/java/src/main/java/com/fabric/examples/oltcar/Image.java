@@ -4,20 +4,19 @@ import com.owlike.genson.annotation.JsonProperty;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
-import java.sql.Timestamp;
 import java.util.Objects;
 
 @DataType()
 public final class Image {
 	
 	@Property()
-	private final Timestamp timestamp;
+	private final String millis;
 	
 	@Property()
 	private final String base64Image;
 	
-	public Timestamp getTimestamp() {
-		return timestamp;
+	public String getMillis() {
+		return millis;
 	}
 	
 	public String getBase64Image() {
@@ -25,8 +24,8 @@ public final class Image {
 	}
 	
 	
-	public Image(@JsonProperty("millis") final Long millis, @JsonProperty("base64Image") final String base64Image) {
-		this.timestamp = new Timestamp(millis);
+	public Image(@JsonProperty("millis") final String millis, @JsonProperty("base64Image") final String base64Image) {
+		this.millis = millis;
 		this.base64Image = base64Image;
 	}
 	
@@ -42,18 +41,18 @@ public final class Image {
 		
 		Image other = (Image) obj;
 		
-		return Objects.deepEquals(new String[]{getTimestamp().toString(), getBase64Image()},
-				new String[]{other.getTimestamp().toString(), other.getBase64Image()});
+		return Objects.deepEquals(new String[]{getMillis(), getBase64Image()},
+				new String[]{other.getMillis(), other.getBase64Image()});
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(getTimestamp(), getBase64Image());
+		return Objects.hash(getMillis(), getBase64Image());
 	}
 	
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName() + "@" + Integer.toHexString(hashCode())
-				+ " timestamp=" + timestamp.toString() + ", base64Image=" + base64Image + "]";
+				+ " millis=" + getMillis() + ", base64Image=" + base64Image + "]";
 	}
 }

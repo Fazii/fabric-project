@@ -40,7 +40,7 @@ public final class ImageContract implements ContractInterface {
 	public Image addImage(final Context ctx, final String millis, final String base64Image) {
 		ChaincodeStub stub = ctx.getStub();
 		
-		Image image = new Image(Long.parseLong(millis), base64Image);
+		Image image = new Image(millis, base64Image);
 		String imageState = genson.serialize(image);
 		stub.putStringState(millis, imageState);
 		
@@ -79,5 +79,12 @@ public final class ImageContract implements ContractInterface {
 		}
 		
 		return images.toArray(new Image[0]);
+	}
+	
+	@Transaction()
+	public Image getImageByMillis(final Context ctx, String millis) {
+		ChaincodeStub stub = ctx.getStub();
+		final byte[] state = stub.getState(millis);
+		return genson.deserialize(state, Image.class);
 	}
 }
