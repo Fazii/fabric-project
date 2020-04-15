@@ -10,9 +10,10 @@ import org.hyperledger.fabric.contract.annotation.Info;
 import org.hyperledger.fabric.contract.annotation.License;
 import org.hyperledger.fabric.contract.annotation.Transaction;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ledger.KeyModification;
+import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,36 +37,30 @@ public final class ImageContract implements ContractInterface {
 	private final Genson genson = new Genson();
 	
 	@Transaction()
-	public Image addImage(final Context ctx, final String id, final String timestamp, final String base64Image) {
+	public Image addImage(final Context ctx, final String millis, final String base64Image) {
 		ChaincodeStub stub = ctx.getStub();
 		
-		Image image = new Image(id, timestamp, base64Image);
+		Image image = new Image(Long.parseLong(millis), base64Image);
 		String imageState = genson.serialize(image);
-		stub.putStringState(id, imageState);
+		stub.putStringState(millis, imageState);
 		
 		return image;
 	}
 	
-	@Transaction()
-	public Image[] queryImageHistory(final Context ctx, final String id) {
+	public Image[] getImagesBetweenDates(final Context ctx, final String startDate, String endDate) {
 		ChaincodeStub stub = ctx.getStub();
 		
 		List<Image> images = new ArrayList<>();
+		final String startTime = String.valueOf(Timestamp.valueOf(startDate).getTime());
+		final String endTime = String.valueOf(Timestamp.valueOf(endDate).getTime());
 		
-		QueryResultsIterator<KeyModification> results = stub.getHistoryForKey(id);
+		final QueryResultsIterator<KeyValue> results = stub.getStateByRange(startTime, endTime);
 		
-		for (KeyModification result : results) {
+		for (KeyValue result : results) {
 			Image image = genson.deserialize(result.getStringValue(), Image.class);
 			images.add(image);
 		}
 		
 		return images.toArray(new Image[0]);
-	}
-	
-	@Transaction()
-	public Image queryImage(final Context ctx, final String id) {
-		ChaincodeStub stub = ctx.getStub();
-		byte[] result = stub.getState(id);
-		return genson.deserialize(result, Image.class);
 	}
 }

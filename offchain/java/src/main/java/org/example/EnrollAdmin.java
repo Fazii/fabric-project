@@ -17,7 +17,7 @@ public class EnrollAdmin {
 		System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
 	}
 	
-	public static void main(String[] args) throws Exception {
+	public static void enrollAdmin() throws Exception {
 		
 		Properties props = new Properties();
 		props.put("pemFile",

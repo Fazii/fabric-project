@@ -7,12 +7,17 @@ import org.hyperledger.fabric.gateway.Wallet;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 
 public class ClientApp {
 	
 	static {
 		System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
+		try {
+			EnrollAdmin.enrollAdmin();
+			RegisterUser.registerUser();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -21,21 +26,18 @@ public class ClientApp {
 		Path networkConfigPath = Paths.get(ClassLoader.getSystemResource("connection.yaml").toURI());
 		
 		Gateway.Builder builder = Gateway.createBuilder();
-		builder.identity(wallet, "user1").networkConfig(networkConfigPath).discovery(true);
+		builder.identity(wallet, "user").networkConfig(networkConfigPath).discovery(true);
 		
 		try (Gateway gateway = builder.connect()) {
 			
 			Network network = gateway.getNetwork("mychannel");
-			Contract contract = network.getContract("carcc");
+			Contract contract = network.getContract("image");
 			
 			byte[] result;
 			
-			contract.submitTransaction("addImage", "1", new Timestamp(System.currentTimeMillis()).toString(), "#sdvefvevevbtrb--");
+			contract.submitTransaction("addImage", String.valueOf(System.currentTimeMillis()), "blabla--");
 			
-			result = contract.evaluateTransaction("queryImage", "1");
-			System.out.println(new String(result));
-			
-			result = contract.evaluateTransaction("queryImageHistory", "1");
+			result = contract.evaluateTransaction("getImagesBetweenDates", "2020-04-15 14:41:33.087", "2020-04-16 14:41:33.087");
 			System.out.println(new String(result));
 		}
 	}
