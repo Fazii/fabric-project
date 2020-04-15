@@ -2,4 +2,4 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-rootProject.name = 'java-chaincode-image'
+rootProject.name = 'java-chaincode-bootstrap'

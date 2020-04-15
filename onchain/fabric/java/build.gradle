@@ -25,6 +25,15 @@ repositories {
 	}
 }
 
+shadowJar {
+	baseName = 'chaincode'
+	version = null
+	classifier = null
+	manifest {
+		attributes 'Main-Class': 'org.hyperledger.fabric.contract.ContractRouter'
+	}
+}
+
 test {
 	useJUnitPlatform()
 	testLogging {
