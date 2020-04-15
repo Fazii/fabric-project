@@ -7,6 +7,7 @@ import org.hyperledger.fabric.gateway.Wallet;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 
 public class ClientApp {
 	
@@ -28,13 +29,13 @@ public class ClientApp {
 			Contract contract = network.getContract("carcc");
 			
 			byte[] result;
-
-			result = contract.evaluateTransaction("queryCarsHistory", "1234567");
+			
+			contract.submitTransaction("addImage", "1", new Timestamp(System.currentTimeMillis()).toString(), "#sdvefvevevbtrb--");
+			
+			result = contract.evaluateTransaction("queryImage", "1");
 			System.out.println(new String(result));
 			
-			contract.submitTransaction("addCarRepair", "1234567", "30000", "Wheel change 2");
-			
-			result = contract.evaluateTransaction("queryCarsHistory", "1234567");
+			result = contract.evaluateTransaction("queryImageHistory", "1");
 			System.out.println(new String(result));
 		}
 	}
