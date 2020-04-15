@@ -37,8 +37,9 @@ public class ClientApp {
 			
 			byte[] result;
 			
-			contract.submitTransaction("addImage", "1", "blabla--");
-			
+			final byte[] addedImage = contract.submitTransaction("addImage", "1", "blabla--");
+			System.out.println("ADDED: " + new String(addedImage));
+
 //			result = contract.evaluateTransaction("getImagesBetweenDates", "0", "1");
 //			System.out.println(new String(result));
 //			
