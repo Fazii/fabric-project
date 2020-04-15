@@ -1,4 +1,4 @@
-package com.fabric.examples.oltcar;
+package com.nowakowski.data;
 
 import com.owlike.genson.Genson;
 import org.hyperledger.fabric.contract.Context;
@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Contract(
-		name = "OLTCar",
+		name = "ImageContract",
 		info = @Info(
-				title = "OLTCar contract",
-				description = "OLT example contract",
+				title = "Image contract",
+				description = "Contract for storing and fetching images",
 				version = "0.0.1",
 				license = @License(
 						name = "Apache 2.0 License",
@@ -31,34 +31,41 @@ import java.util.List;
 						url = "krzysztof95.nowakowski@student.uj.edu.pl")))
 
 @Default
-public final class OLTCar implements ContractInterface {
+public final class ImageContract implements ContractInterface {
 	
 	private final Genson genson = new Genson();
 	
 	@Transaction()
-	public Car addCarRepair(final Context ctx, final String vin, final Integer mileage, final String repairName) {
+	public Image addImage(final Context ctx, final String id, final String timestamp, final String base64Image) {
 		ChaincodeStub stub = ctx.getStub();
 		
-		Car car = new Car(mileage, repairName);
-		String carState = genson.serialize(car);
-		stub.putStringState(vin, carState);
+		Image image = new Image(id, timestamp, base64Image);
+		String imageState = genson.serialize(image);
+		stub.putStringState(id, imageState);
 		
-		return car;
+		return image;
 	}
 	
 	@Transaction()
-	public Car[] queryCarsHistory(final Context ctx, final String vin) {
+	public Image[] queryImageHistory(final Context ctx, final String id) {
 		ChaincodeStub stub = ctx.getStub();
 		
-		List<Car> cars = new ArrayList<>();
+		List<Image> images = new ArrayList<>();
 		
-		QueryResultsIterator<KeyModification> results = stub.getHistoryForKey(vin);
+		QueryResultsIterator<KeyModification> results = stub.getHistoryForKey(id);
 		
 		for (KeyModification result : results) {
-			Car car = genson.deserialize(result.getStringValue(), Car.class);
-			cars.add(car);
+			Image image = genson.deserialize(result.getStringValue(), Image.class);
+			images.add(image);
 		}
 		
-		return cars.toArray(new Car[0]);
+		return images.toArray(new Image[0]);
+	}
+	
+	@Transaction()
+	public Image queryImage(final Context ctx, final String id) {
+		ChaincodeStub stub = ctx.getStub();
+		byte[] result = stub.getState(id);
+		return genson.deserialize(result, Image.class);
 	}
 }
