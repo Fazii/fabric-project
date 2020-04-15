@@ -20,7 +20,7 @@ public class RegisterUser {
 		System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
 	}
 	
-	public static void registerUser() throws Exception {
+	public static void registerUser(String user) throws Exception {
 		
 		Properties props = new Properties();
 		props.put("pemFile",
@@ -32,9 +32,9 @@ public class RegisterUser {
 		
 		Wallet wallet = Wallet.createFileSystemWallet(Paths.get("wallet"));
 		
-		boolean userExists = wallet.exists("user");
+		boolean userExists = wallet.exists(user);
 		if (userExists) {
-			System.out.println("An identity for the user \"user\" already exists in the wallet");
+			System.out.println("An identity for the user  " + user + "  already exists in the wallet");
 			return;
 		}
 		
@@ -92,11 +92,11 @@ public class RegisterUser {
 		
 		RegistrationRequest registrationRequest = new RegistrationRequest("user");
 		registrationRequest.setAffiliation("org1.department1");
-		registrationRequest.setEnrollmentID("user");
+		registrationRequest.setEnrollmentID(user);
 		String enrollmentSecret = caClient.register(registrationRequest, admin);
-		Enrollment enrollment = caClient.enroll("user", enrollmentSecret);
-		Identity user = Identity.createIdentity("Org1MSP", enrollment.getCert(), enrollment.getKey());
-		wallet.put("user", user);
-		System.out.println("Successfully enrolled user \"user\" and imported it into the wallet");
+		Enrollment enrollment = caClient.enroll(user, enrollmentSecret);
+		Identity identity = Identity.createIdentity("Org1MSP", enrollment.getCert(), enrollment.getKey());
+		wallet.put(user, identity);
+		System.out.println("Successfully enrolled user " + user + " and imported it into the wallet");
 	}
 }

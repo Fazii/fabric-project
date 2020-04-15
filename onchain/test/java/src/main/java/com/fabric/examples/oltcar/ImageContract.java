@@ -58,7 +58,23 @@ public final class ImageContract implements ContractInterface {
 		final QueryResultsIterator<KeyValue> results = stub.getStateByRange(startTime, endTime);
 		
 		for (KeyValue result : results) {
-			Image image = genson.deserialize(result.getStringValue(), Image.class);
+			Image image = genson.deserialize(result.getValue(), Image.class);
+			images.add(image);
+		}
+		
+		return images.toArray(new Image[0]);
+	}
+	
+	@Transaction()
+	public Image[] getImages(final Context ctx) {
+		ChaincodeStub stub = ctx.getStub();
+		
+		List<Image> images = new ArrayList<>();
+		
+		final QueryResultsIterator<KeyValue> results = stub.getStateByRange("", "");
+		
+		for (KeyValue result : results) {
+			Image image = genson.deserialize(result.getValue(), Image.class);
 			images.add(image);
 		}
 		
