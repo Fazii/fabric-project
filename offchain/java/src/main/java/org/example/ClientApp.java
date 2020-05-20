@@ -25,10 +25,10 @@ public class ClientApp {
 	private static final String USER = "user";
 	private static final String CHANNEL = "mychannel";
 	private static final String CONTRACT = "imagedb";
-	public static final String KAFKA_BOOTSTRAP = "localhost:9092";
-	public static final String OUTPUT_TOPIC = "output-topic";
-	public static final String REQUEST_DATA_TOPIC = "request-data-topic";
-	public static final String RESULT_DATA_TOPIC = "result-data-topic";
+	private static final String KAFKA_BOOTSTRAP = "localhost:9092";
+	private static final String OUTPUT_TOPIC = "output-topic";
+	private static final String REQUEST_DATA_TOPIC = "request-data-topic";
+	private static final String RESULT_DATA_TOPIC = "result-data-topic";
 	private static final KafkaProducer<String, String> producer = new KafkaProducer<>(getProducerProperties());
 	private static final KafkaConsumer<String, String> consumer = new KafkaConsumer<>(getConsumerProperties());
 	
