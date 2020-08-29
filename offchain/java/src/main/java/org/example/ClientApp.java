@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class ClientApp {
-	
-	private static final String USER = "user";
+
 	private static final String CHANNEL = "mychannel";
 	private static final String CONTRACT = "imagedb";
 	private static final String KAFKA_BOOTSTRAP = "localhost:9092";
@@ -36,42 +35,41 @@ public class ClientApp {
 		System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
 		try {
 			EnrollAdmin.enrollAdmin();
-			RegisterUser.registerUser(USER);
+			RegisterUser.registerUser();
 		} catch (Exception e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
 	
 	public static void main(String[] args) throws Exception {
-		consumer.subscribe(List.of(OUTPUT_TOPIC, REQUEST_DATA_TOPIC));
-		
 		Path walletPath = Paths.get("wallet");
 		Wallet wallet = Wallet.createFileSystemWallet(walletPath);
 		Path networkConfigPath = Paths.get(ClassLoader.getSystemResource("connection.yaml").toURI());
-		
+
 		Gateway.Builder builder = Gateway.createBuilder();
-		builder.identity(wallet, USER).networkConfig(networkConfigPath).discovery(true);
-		
+		builder.identity(wallet, "user").networkConfig(networkConfigPath).discovery(true);
+
 		try (Gateway gateway = builder.connect()) {
 			
-			Network network = gateway.getNetwork(CHANNEL);
-			Contract contract = network.getContract(CONTRACT);
-			
+			Network network = gateway.getNetwork("mychannel");
+			Contract contract = network.getContract("imagedb");
+			consumer.subscribe(List.of("output-topic", "request-data-topic"));
+
 			while (true) {
 				final ConsumerRecords<String, String> consumerRecords =
 						consumer.poll(Duration.ofMillis(1000));
 				
 				for (ConsumerRecord<String, String> record : consumerRecords) {
-					if (OUTPUT_TOPIC.equals(record.topic())) {
+					if ("output-topic".equals(record.topic())) {
 						contract.submitTransaction("addImage", String.valueOf(System.currentTimeMillis()), record.value());
 					}
 					
-					if (REQUEST_DATA_TOPIC.equals(record.topic())) {
+					if ("request-data-topic".equals(record.topic())) {
 						final String[] bounds = record.value().split(" ");
 						long startTime = Long.parseLong(bounds[0].replaceAll("[^\\d.]", ""));
 						long endTime = Long.parseLong(bounds[1].replaceAll("[^\\d.]", ""));
 						byte[] result = contract.evaluateTransaction("getImagesBetweenDates", String.valueOf(startTime), String.valueOf(endTime));
-						producer.send(new ProducerRecord<>(RESULT_DATA_TOPIC, new String(result)));
+						producer.send(new ProducerRecord<>("result-data-topic", new String(result)));
 					}
 				}
 				consumer.commitAsync();

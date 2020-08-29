@@ -39,8 +39,8 @@ public class EnrollAdmin {
 		enrollmentRequestTLS.addHost("localhost");
 		enrollmentRequestTLS.setProfile("tls");
 		Enrollment enrollment = caClient.enroll("admin", "adminpw", enrollmentRequestTLS);
-		Identity user = Identity.createIdentity("Org1MSP", enrollment.getCert(), enrollment.getKey());
-		wallet.put("admin", user);
+		Identity admin = Identity.createIdentity("Org1MSP", enrollment.getCert(), enrollment.getKey());
+		wallet.put("admin", admin);
 		System.out.println("Successfully enrolled user \"admin\" and imported it into the wallet");
 	}
 }

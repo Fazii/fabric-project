@@ -13,7 +13,6 @@ import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,31 +34,29 @@ import java.util.List;
 @Default
 public final class ImageContract implements ContractInterface {
 	
-	private final Genson genson = new Genson();
-	
 	@Transaction()
-	public Image addImage(final Context ctx, final String millis, final String base64Image) {
+	public Image addImage(final Context ctx, final String timestamp, final String base64Image) {
 		ChaincodeStub stub = ctx.getStub();
 		
-		Image image = new Image(millis, base64Image);
-		String imageState = genson.serialize(image);
-		stub.putStringState(millis, imageState);
+		Image image = new Image(timestamp, base64Image);
+		String imageState = new Genson().serialize(image);
+		stub.putStringState(timestamp, imageState);
 		
 		return image;
 	}
 	
 	@Transaction()
-	public Image[] getImagesBetweenDates(final Context ctx, final String startMillis, String endMillis) {
+	public Image[] getImagesBetweenDates(final Context ctx, final String startTimestamp, String endTimestamp) {
 		ChaincodeStub stub = ctx.getStub();
 		
 		List<Image> images = new ArrayList<>();
 		
-		final QueryResultsIterator<KeyValue> results = stub.getStateByRange(startMillis, endMillis);
-		
+		final QueryResultsIterator<KeyValue> results = stub.getStateByRange(startTimestamp, endTimestamp);
+
 		Iterator<KeyValue> iter = results.iterator();
 		while (iter.hasNext()) {
 			final KeyValue next = iter.next();
-			Image image = genson.deserialize(next.getValue(), Image.class);
+			Image image = new Genson().deserialize(next.getValue(), Image.class);
 			images.add(image);
 		}
 		try {
@@ -69,12 +66,5 @@ public final class ImageContract implements ContractInterface {
 		}
 		
 		return images.toArray(new Image[0]);
-	}
-	
-	@Transaction()
-	public Image getImageByMillis(final Context ctx, String millis) {
-		ChaincodeStub stub = ctx.getStub();
-		final byte[] state = stub.getState(millis);
-		return genson.deserialize(state, Image.class);
 	}
 }

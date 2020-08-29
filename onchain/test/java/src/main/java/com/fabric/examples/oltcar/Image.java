@@ -8,15 +8,15 @@ import java.util.Objects;
 
 @DataType()
 public final class Image {
-	
+
 	@Property()
-	private final String millis;
-	
+	private final String timestamp;
+
 	@Property()
 	private final String base64Image;
 	
-	public String getMillis() {
-		return millis;
+	public String getTimestamp() {
+		return timestamp;
 	}
 	
 	public String getBase64Image() {
@@ -24,8 +24,8 @@ public final class Image {
 	}
 	
 	
-	public Image(@JsonProperty("millis") final String millis, @JsonProperty("base64Image") final String base64Image) {
-		this.millis = millis;
+	public Image(@JsonProperty("timestamp") final String timestamp, @JsonProperty("base64Image") final String base64Image) {
+		this.timestamp = timestamp;
 		this.base64Image = base64Image;
 	}
 	
@@ -41,18 +41,18 @@ public final class Image {
 		
 		Image other = (Image) obj;
 		
-		return Objects.deepEquals(new String[]{getMillis(), getBase64Image()},
-				new String[]{other.getMillis(), other.getBase64Image()});
+		return Objects.deepEquals(new String[]{getTimestamp(), getBase64Image()},
+				new String[]{other.getTimestamp(), other.getBase64Image()});
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(getMillis(), getBase64Image());
+		return Objects.hash(getTimestamp(), getBase64Image());
 	}
 	
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName() + "@" + Integer.toHexString(hashCode())
-				+ " millis=" + getMillis() + ", base64Image=" + base64Image + "]";
+				+ " timestamp=" + getTimestamp() + ", base64Image=" + base64Image + "]";
 	}
 }
